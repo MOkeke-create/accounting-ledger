@@ -23,7 +23,7 @@ public class Program {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
 
             String line;
-            reader.readLine(); // skip header
+            reader.readLine();
 
             while ((line = reader.readLine()) != null) {
 
@@ -79,6 +79,15 @@ public class Program {
 
         System.out.print("Amount: ");
         double amount = Double.parseDouble(scanner.nextLine());
+        Transaction newDeposit = new Transaction(
+                LocalDate.now(),
+                LocalTime.now(),
+                description,
+                vendor,
+                amount
+        );
+        transactions.add(newDeposit);
+
 
     }
 
