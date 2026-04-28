@@ -9,18 +9,14 @@ import java.util.Scanner;
 
 public class Program {
     static Scanner scanner = new Scanner(System.in);
-    static Scanner input = new Scanner(System.in);
     static ArrayList<Transaction> transactions = new ArrayList<>();
     static String fileName = "transactions.csv";
 
     public static void main(String[] args) {
 
 
-
-
-
-
     }
+
     public static void loadTransactions() {
 
         try {
@@ -42,5 +38,50 @@ public class Program {
                 Transaction transaction = new Transaction(date, time, description, vendor, amount);
 
                 transactions.add(transaction);
-
             }
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("Error loading file.");
+        }
+    }
+
+    public static void displayHomeScreen() {
+        boolean running = true;
+
+        while (running) {
+
+            System.out.println("\n=== HOME SCREEN ===");
+            System.out.println("D) Add Deposit");
+            System.out.println("P) Make Payment");
+            System.out.println("L) Ledger");
+            System.out.println("X) Exit");
+
+            String choice = scanner.nextLine().toUpperCase();
+
+            switch (choice){
+                case "D" -> addDeposit();
+                case "P" -> makePayment();
+                case "L" -> displayLedgerScreen();
+                case "X" -> running = false;
+                default -> System.out.println("Invalid option, please try again!");
+            }
+        }
+
+    }
+
+    public static void addDeposit(){
+        System.out.print("Description: ");
+        String description = scanner.nextLine();
+
+        System.out.print("Vendor: ");
+        String vendor = scanner.nextLine();
+
+        System.out.print("Amount: ");
+        double amount = Double.parseDouble(scanner.nextLine());
+
+    }
+
+
+
+}
