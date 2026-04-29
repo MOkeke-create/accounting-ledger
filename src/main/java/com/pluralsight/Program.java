@@ -155,6 +155,7 @@ public class Program {
                   (A) All entries.
                   (D) Deposits.
                   (P) Payments.
+                  (R) Reports.
                   (H) Home.
                   
                   Enter command here: """);
@@ -163,6 +164,7 @@ public class Program {
                 case "A" -> displayAllEntries();
                 case "D" -> displayDeposits();
                 case "P" -> displayPayments();
+                case "R" -> displayReportsScreen();
                 case "H" -> running = false;
                 default -> System.out.println("Invalid option, please try again.");
             }
@@ -175,7 +177,7 @@ public class Program {
         Collections.reverse(transactions);
         for (Transaction transaction : transactions) {
 
-            System.out.printf("%s | %s | %s | %s | %.2f\n",
+            System.out.printf("%s | %s | %s | %s | $%.2f\n",
                     transaction.getDate(),
                     transaction.getTime(),
                     transaction.getDescription(),
@@ -222,5 +224,34 @@ public class Program {
 
         }
     }
+
+    public static void displayReportsScreen() {
+        boolean running = true;
+        while (running) {
+
+            System.out.print("""
+                       =====REPORTS=====
+                     --------------------
+                    \s
+                     (A) Month to date.
+                     (B) Previous month.
+                     (C) Year to date.
+                     (D) Previous year.
+                     (E) Search by vendor.
+                     (X) Back.\s
+                    \s
+                     Enter command here:""");
+            String choice = scanner.nextLine().toUpperCase();
+            switch (choice) {
+                case "A" -> getMonthToDate();
+                case "B" -> getPreviousMonth();
+                case "C" -> getYearToDate();
+                case "D" -> getPreviousYear();
+                case "E" -> searchVendor();
+                case "X" -> running = false;
+            }
+        }
+    }
+
 
 }
