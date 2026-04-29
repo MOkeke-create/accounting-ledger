@@ -187,10 +187,40 @@ public class Program {
 
     }
 
+    public static void displayDeposits() {
 
+        for (Transaction deposit : transactions) {
 
+            if (deposit.getAmount() > 0) {
 
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        deposit.getDate(),
+                        deposit.getTime(),
+                        deposit.getDescription(),
+                        deposit.getVendor(),
+                        deposit.getAmount());
 
+            }
 
+        }
+    }
+
+    public static void displayPayments() {
+
+        for (Transaction payment : transactions) {
+
+            if (payment.getAmount() < 0) {
+
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        payment.getDate(),
+                        payment.getTime(),
+                        payment.getDescription(),
+                        payment.getVendor(),
+                        payment.getAmount());
+
+            }
+
+        }
+    }
 
 }
