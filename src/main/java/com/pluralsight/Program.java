@@ -15,6 +15,10 @@ public class Program {
     static Scanner scanner = new Scanner(System.in);
     static ArrayList<Transaction> transactions = new ArrayList<>();
     static String fileName = "transactions.csv";
+    static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String RESET = "\u001B[0m";
 
     public static void main(String[] args) {
         loadTransactions();
@@ -123,6 +127,8 @@ public class Program {
         );
         transactions.add(newDeposit);
         saveTransaction(newDeposit);
+        System.out.println("Adding deposit....");
+        System.out.println("Deposit added.");
 
 
     }
@@ -151,6 +157,8 @@ public class Program {
 
         transactions.add(newPayment);
         saveTransaction(newPayment);
+
+        System.out.println("Payment was successful.");
     }
 
 
@@ -184,14 +192,11 @@ public class Program {
 
     public static void displayAllEntries(){
         Collections.reverse(transactions);
-        for (Transaction transaction : transactions) {
 
-            System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                    transaction.getDate(),
-                    transaction.getTime(),
-                    transaction.getDescription(),
-                    transaction.getVendor(),
-                    transaction.getAmount());
+        printHeader();
+
+        for (Transaction transaction : transactions) {
+            printTransaction(transaction);
 
         }
         Collections.reverse(transactions);
@@ -200,37 +205,25 @@ public class Program {
 
     public static void displayDeposits() {
 
+        printHeader();
+
         for (Transaction deposit : transactions) {
 
             if (deposit.getAmount() > 0) {
-
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        deposit.getDate(),
-                        deposit.getTime(),
-                        deposit.getDescription(),
-                        deposit.getVendor(),
-                        deposit.getAmount());
-
+                printTransaction(deposit);
             }
-
         }
     }
 
     public static void displayPayments() {
 
+        printHeader();
+
         for (Transaction payment : transactions) {
 
             if (payment.getAmount() < 0) {
-
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        payment.getDate(),
-                        payment.getTime(),
-                        payment.getDescription(),
-                        payment.getVendor(),
-                        payment.getAmount());
-
+                printTransaction(payment);
             }
-
         }
     }
 
@@ -267,85 +260,80 @@ public class Program {
     }
 
     public static void getMonthToDate(){
+        printHeader();
+
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfMonth = today.withDayOfMonth(1);
-        for(Transaction transaction: transactions){
+
+        for (Transaction transaction : transactions) {
+
             LocalDate date = transaction.getDate();
-            if(date.isAfter(firstDayOfMonth) && date.isBefore(today)){
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        date,
-                        transaction.getTime(),
-                        transaction.getDescription(),
-                        transaction.getVendor(),
-                        transaction.getAmount());
+
+            if (!date.isBefore(firstDayOfMonth) && !date.isAfter(today)) {
+                printTransaction(transaction);
             }
         }
     }
     public static void getPreviousMonth(){
+        printHeader();
+
         LocalDate today = LocalDate.now();
         LocalDate firstDayLastMonth = today.minusMonths(1).withDayOfMonth(1);
         LocalDate lastDayLastMonth = today.withDayOfMonth(1).minusDays(1);
-        for (Transaction transaction : transactions){
-            LocalDate date = transaction.getDate();
-            if(!date.isBefore(firstDayLastMonth) && !date.isAfter(lastDayLastMonth)){
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        date,
-                        transaction.getTime(),
-                        transaction.getDescription(),
-                        transaction.getVendor(),
-                        transaction.getAmount());
-            }
 
+        for (Transaction transaction : transactions) {
+
+            LocalDate date = transaction.getDate();
+
+            if (!date.isBefore(firstDayLastMonth) && !date.isAfter(lastDayLastMonth)) {
+                printTransaction(transaction);
+            }
         }
     }
     public static void  getYearToDate(){
-        LocalDate firstDayOfYear = LocalDate.now().withDayOfYear(1);
-        for (Transaction transaction : transactions){
-            LocalDate date = transaction.getDate();
-            if(!date.isBefore(firstDayOfYear)){
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        date,
-                        transaction.getTime(),
-                        transaction.getDescription(),
-                        transaction.getVendor(),
-                        transaction.getAmount());
-            }
+        printHeader();
 
+        LocalDate firstDayOfYear = LocalDate.now().withDayOfYear(1);
+
+        for (Transaction transaction : transactions) {
+
+            if (!transaction.getDate().isBefore(firstDayOfYear)) {
+                printTransaction(transaction);
+            }
         }
 
     }
     public static void getPreviousYear(){
+        printHeader();
+
         LocalDate start = LocalDate.now().minusYears(1).withDayOfYear(1);
         LocalDate end = start.withMonth(12).withDayOfMonth(31);
-        for (Transaction transaction : transactions){
+
+        for (Transaction transaction : transactions) {
+
             LocalDate date = transaction.getDate();
-            if (!date.isBefore(start) && !date.isAfter(end)){
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        date,
-                        transaction.getTime(),
-                        transaction.getDescription(),
-                        transaction.getVendor(),
-                        transaction.getAmount());
+
+            if (!date.isBefore(start) && !date.isAfter(end)) {
+                printTransaction(transaction);
             }
         }
 
     }
     public static void searchVendor(){
+        printHeader();
+
         System.out.print("Enter vendor name: ");
         String vendorName = scanner.nextLine();
-        for (Transaction transaction : transactions){
-            String vendor = transaction.getVendor();
-            if(vendor.equalsIgnoreCase(vendorName)){
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        transaction.getDate(),
-                        transaction.getTime(),
-                        transaction.getDescription(),
-                        transaction.getVendor(),
-                        transaction.getAmount());
+
+        for (Transaction transaction : transactions) {
+
+            if (transaction.getVendor().equalsIgnoreCase(vendorName)) {
+                printTransaction(transaction);
             }
         }
     }
     public static void runCustomSearch(){
+        printHeader();
         System.out.print("Start Date (yyyy-mm-dd) or press Enter to skip: ");
         String startDateInput = scanner.nextLine();
 
@@ -398,7 +386,7 @@ public class Program {
             if(!vendor.isEmpty() && !transaction.getVendor().toLowerCase().contains(vendor)){
                 match = false;
             }
-            double transactionAmount = transaction.getAmount();
+            double transactionAmount = Math.abs(transaction.getAmount());
             if (minAmount != null && transactionAmount < minAmount) {
                 match = false;
             }
@@ -407,15 +395,29 @@ public class Program {
                 match= false;
             }
             if(match){
-                System.out.printf("%s | %s | %s | %s | $%.2f\n",
-                        transaction.getDate(),
-                        transaction.getTime(),
-                        transaction.getDescription(),
-                        transaction.getVendor(),
-                        transaction.getAmount());
+                printTransaction(transaction);
             }
 
         }
+    }
+    public static void printHeader() {
+        System.out.printf("%-12s %-10s %-25s %-20s %12s\n",
+                "DATE", "TIME", "DESCRIPTION", "VENDOR", "AMOUNT");
+
+        System.out.println("----------------------------------------------------------------------------------------");
+    }
+    public static void printTransaction(Transaction transaction) {
+        double amount = transaction.getAmount();
+        String color = amount < 0 ? RED : GREEN;
+
+        System.out.printf("%s%s | %s | %s | %s | $%.2f%s\n",
+                color,
+                transaction.getDate(),
+                transaction.getTime(),
+                transaction.getDescription(),
+                transaction.getVendor(),
+                amount,
+                RESET);
     }
 
 
