@@ -85,8 +85,8 @@ public class Program {
                (P) Make a payment.
                (L) Access ledger.
                (X) Exit.
-               
-               Enter command here: """);
+              \s
+               Enter command here:\s""");
 
             String choice = scanner.nextLine().toUpperCase();
 
@@ -160,14 +160,14 @@ public class Program {
             System.out.print("""
                     =====LEDGER=====
                   --------------------
-                  
+                 \s
                   (A) All entries.
                   (D) Deposits.
                   (P) Payments.
                   (R) Reports.
                   (H) Home.
-                  
-                  Enter command here: """);
+                 \s
+                  Enter command here:\s""");
             String choice = scanner.nextLine().toUpperCase();
             switch(choice){
                 case "A" -> displayAllEntries();
@@ -247,7 +247,9 @@ public class Program {
                      (C) Year to date.
                      (D) Previous year.
                      (E) Search by vendor.
-                     (X) Back.\s
+                     (F) Custom search.
+                     (X) Back.
+                     (H) Home.\s
                     \s
                      Enter command here:""");
             String choice = scanner.nextLine().toUpperCase();
@@ -257,7 +259,9 @@ public class Program {
                 case "C" -> getYearToDate();
                 case "D" -> getPreviousYear();
                 case "E" -> searchVendor();
+                case "F" -> runCustomSearch();
                 case "X" -> running = false;
+                case "H" -> runHomeScreen();
             }
         }
     }
@@ -339,6 +343,78 @@ public class Program {
                         transaction.getVendor(),
                         transaction.getAmount());
             }
+        }
+    }
+    public static void runCustomSearch(){
+        System.out.print("Start Date (yyyy-mm-dd) or press Enter to skip: ");
+        String startDateInput = scanner.nextLine();
+
+        System.out.print("End Date (yyyy-mm-dd) or press Enter to skip: ");
+        String endDateInput = scanner.nextLine();
+
+        System.out.print("Description or press Enter to skip: ");
+        String description = scanner.nextLine().toLowerCase();
+
+        System.out.print("Vendor or press Enter to skip: ");
+        String vendor = scanner.nextLine().toLowerCase();
+
+        System.out.print("Minimum Amount or press Enter to skip: ");
+        String minAmountInput = scanner.nextLine();
+
+        System.out.print("Maximum Amount or press Enter to skip: ");
+        String maxAmountInput = scanner.nextLine();
+
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        Double minAmount = null;
+        Double maxAmount = null;
+
+        if (!startDateInput.isEmpty()) {
+            startDate = LocalDate.parse(startDateInput);
+        }
+
+        if (!endDateInput.isEmpty()) {
+            endDate = LocalDate.parse(endDateInput);
+        }
+
+        if (!minAmountInput.isEmpty()) {
+            minAmount = Double.parseDouble(minAmountInput);
+        }
+
+        if (!maxAmountInput.isEmpty()) {
+            maxAmount = Double.parseDouble(maxAmountInput);
+        }
+        for(Transaction transaction : transactions){
+            boolean match = true;
+            if(startDate != null && transaction.getDate().isBefore(startDate)){
+                match = false;
+            }
+            if (endDate != null && transaction.getDate().isAfter(endDate)){
+                match = false;
+            }
+            if (!description.isEmpty() && !transaction.getDescription().toLowerCase().contains(description)){
+                match = false;
+            }
+            if(!vendor.isEmpty() && !transaction.getVendor().toLowerCase().contains(vendor)){
+                match = false;
+            }
+            double transactionAmount = transaction.getAmount();
+            if (minAmount != null && transactionAmount < minAmount) {
+                match = false;
+            }
+
+            if (maxAmount != null && transactionAmount > maxAmount) {
+                match= false;
+            }
+            if(match){
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        transaction.getDate(),
+                        transaction.getTime(),
+                        transaction.getDescription(),
+                        transaction.getVendor(),
+                        transaction.getAmount());
+            }
+
         }
     }
 
