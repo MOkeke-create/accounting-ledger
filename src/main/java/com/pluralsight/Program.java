@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -17,7 +18,7 @@ public class Program {
 
     public static void main(String[] args) {
         loadTransactions();
-        displayHomeScreen();
+        runHomeScreen();
 
     }
 
@@ -72,7 +73,7 @@ public class Program {
 
     }
 
-    public static void displayHomeScreen() {
+    public static void runHomeScreen() {
         boolean running = true;
 
         while (running) {
@@ -92,7 +93,7 @@ public class Program {
             switch (choice){
                 case "D" -> addDeposit();
                 case "P" -> makePayment();
-                case "L" -> displayLedgerScreen();
+                case "L" -> runLedgerScreen();
                 case "X" -> running = false;
                 default -> System.out.println("Invalid option, please try again!");
             }
@@ -106,12 +107,16 @@ public class Program {
 
         System.out.print("Vendor: ");
         String vendor = scanner.nextLine();
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+        LocalTime parseTime = LocalTime.parse(formattedTime);
 
         System.out.print("Amount: ");
         double amount = Double.parseDouble(scanner.nextLine());
         Transaction newDeposit = new Transaction(
                 LocalDate.now(),
-                LocalTime.now(),
+                parseTime,
                 description,
                 vendor,
                 amount
@@ -128,13 +133,17 @@ public class Program {
 
         System.out.print("Vendor: ");
         String vendor = scanner.nextLine();
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+        LocalTime parseTime = LocalTime.parse(formattedTime);
 
         System.out.print("Amount: ");
         double amount = Double.parseDouble(scanner.nextLine());
         amount = -Math.abs(amount);
         Transaction newPayment = new Transaction(
                 LocalDate.now(),
-                LocalTime.now(),
+                parseTime,
                 description,
                 vendor,
                 amount
@@ -145,7 +154,7 @@ public class Program {
     }
 
 
-    public static void displayLedgerScreen(){
+    public static void runLedgerScreen(){
         boolean running = true;
         while (running){
             System.out.print("""
@@ -164,7 +173,7 @@ public class Program {
                 case "A" -> displayAllEntries();
                 case "D" -> displayDeposits();
                 case "P" -> displayPayments();
-                case "R" -> displayReportsScreen();
+                case "R" -> runReportsScreen();
                 case "H" -> running = false;
                 default -> System.out.println("Invalid option, please try again.");
             }
@@ -225,7 +234,7 @@ public class Program {
         }
     }
 
-    public static void displayReportsScreen() {
+    public static void runReportsScreen() {
         boolean running = true;
         while (running) {
 
@@ -249,6 +258,86 @@ public class Program {
                 case "D" -> getPreviousYear();
                 case "E" -> searchVendor();
                 case "X" -> running = false;
+            }
+        }
+    }
+
+    public static void getMonthToDate(){
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
+        for(Transaction transaction: transactions){
+            LocalDate date = transaction.getDate();
+            if(date.isAfter(firstDayOfMonth) && date.isBefore(today)){
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        date,
+                        transaction.getTime(),
+                        transaction.getDescription(),
+                        transaction.getVendor(),
+                        transaction.getAmount());
+            }
+        }
+    }
+    public static void getPreviousMonth(){
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayLastMonth = today.minusMonths(1).withDayOfMonth(1);
+        LocalDate lastDayLastMonth = today.withDayOfMonth(1).minusDays(1);
+        for (Transaction transaction : transactions){
+            LocalDate date = transaction.getDate();
+            if(!date.isBefore(firstDayLastMonth) && !date.isAfter(lastDayLastMonth)){
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        date,
+                        transaction.getTime(),
+                        transaction.getDescription(),
+                        transaction.getVendor(),
+                        transaction.getAmount());
+            }
+
+        }
+    }
+    public static void  getYearToDate(){
+        LocalDate firstDayOfYear = LocalDate.now().withDayOfYear(1);
+        for (Transaction transaction : transactions){
+            LocalDate date = transaction.getDate();
+            if(!date.isBefore(firstDayOfYear)){
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        date,
+                        transaction.getTime(),
+                        transaction.getDescription(),
+                        transaction.getVendor(),
+                        transaction.getAmount());
+            }
+
+        }
+
+    }
+    public static void getPreviousYear(){
+        LocalDate start = LocalDate.now().minusYears(1).withDayOfYear(1);
+        LocalDate end = start.withMonth(12).withDayOfMonth(31);
+        for (Transaction transaction : transactions){
+            LocalDate date = transaction.getDate();
+            if (!date.isBefore(start) && !date.isAfter(end)){
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        date,
+                        transaction.getTime(),
+                        transaction.getDescription(),
+                        transaction.getVendor(),
+                        transaction.getAmount());
+            }
+        }
+
+    }
+    public static void searchVendor(){
+        System.out.print("Enter vendor name: ");
+        String vendorName = scanner.nextLine();
+        for (Transaction transaction : transactions){
+            String vendor = transaction.getVendor();
+            if(vendor.equalsIgnoreCase(vendorName)){
+                System.out.printf("%s | %s | %s | %s | $%.2f\n",
+                        transaction.getDate(),
+                        transaction.getTime(),
+                        transaction.getDescription(),
+                        transaction.getVendor(),
+                        transaction.getAmount());
             }
         }
     }
